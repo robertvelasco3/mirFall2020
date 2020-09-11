@@ -1,3 +1,5 @@
+from mirConnection import mirConnection
+
 def Dock():
     print('Currently docking the MiR100')
 
@@ -13,6 +15,8 @@ def Load():
 def Undock():
     print('Currently undocking the MiR100')
 
+
+mir = mirConnection()
 print('Program is running!')
 for x in range(0, 5):
     command = input()
