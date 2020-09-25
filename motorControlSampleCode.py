@@ -20,7 +20,7 @@ forward.start(0)
 reverse.start(0)
 
 # this will run your motor in reverse direction for 2 seconds with 80% speed by supplying 80% of the battery voltage
-print "GO backward"
+print("GO backward")
 GPIO.output(Motor1E,GPIO.HIGH)
 forward.ChangeDutyCycle(0)
 reverse.ChangeDutyCycle(80)
@@ -28,14 +28,14 @@ sleep(2)
 
 
 # this will run your motor in forward direction for 5 seconds with 50% speed.
-print "GO forward"
+print("GO forward")
 GPIO.output(Motor1E,GPIO.HIGH)
 forward.ChangeDutyCycle(50)
 reverse.ChangeDutyCycle(0)
 sleep(5)
 
 #stop motor
-print "Now stop"
+print("Now stop")
 GPIO.output(Motor1E,GPIO.LOW)
 forward.stop() # stop PWM from GPIO output it is necessary
 reverse.stop() 
