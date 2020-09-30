@@ -50,11 +50,11 @@ class StateMachine:
         self.motor.moveForward(5)
 
     def stop(self):
-        print('Currently loading the MiR100')
+        print('Currently stop unloading the MiR100')
         self.motor.stop()
 
     def load(self):
-        print('Currently undocking the MiR100')
+        print('Currently loading the MiR100')
         self.motor.moveBackward(2)
 
     def undock(self):
