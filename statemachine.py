@@ -10,10 +10,6 @@ class StateMachine:
         self.mir = mir
         self.motor = motor
         self.finished = False
-        self.states = {}
-
-    def add_State(self, step, state_Name):
-        self.states[step] = state_Name.upper()
 
     def set_State(self, toState):
         self.action(self.currentState)
@@ -65,12 +61,6 @@ if __name__ == "__main__":
     motor = motorControl()
 
     machine = StateMachine(mir, motor, 0)
-    machine.add_State(1, 'MOVING')
-    machine.add_State(2, 'DOCK')
-    machine.add_State(3, 'UNLOAD')
-    machine.add_State(4, 'STOP')
-    machine.add_State(5, 'LOAD')
-    machine.add_State(6, 'UNDOCK')
 
     run = True
     while run:
