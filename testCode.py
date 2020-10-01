@@ -5,6 +5,7 @@ from motorControl import motorControl
 
 def Dock():
     print('Currently docking the MiR100')
+    mir.goToA()
 
 def Unload():
     print('Currently unloading the MiR100')
@@ -12,6 +13,7 @@ def Unload():
 
 def Stop():
     print('Currently stopping the unloading of the MiR100')
+    motor.stop()
 
 def Load():
     print('Currently loading the MiR100')
@@ -19,6 +21,7 @@ def Load():
 
 def Undock():
     print('Currently undocking the MiR100')
+    mir.goToStart()
 
 
 mir = mirConnection()
@@ -26,19 +29,20 @@ motor = motorControl()
 
 #mir.test()
 print('Program is running!')
-for x in range(0, 5):
+command = 'temp'
+while(command != 'End'):
     command = input()
-    if command == 'Dock':
+    if command == 'dock':
         Dock()
-    elif command == 'Unload':
+    elif command == 'unload' or command == 'Unload':
         Unload()
-    elif command == 'Stop':
+    elif command == 'stop' or command == 'Stop':
         Stop()
-    elif command == 'Load':
+    elif command == 'load' or command == 'Load':
         Load()
-    elif command == 'Undock':
+    elif command == 'undock':
         Undock()
     else:
         print('Error: command not valid')
 
-motor.stop()
+motor.cleanUp()
