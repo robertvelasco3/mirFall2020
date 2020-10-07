@@ -36,9 +36,10 @@ class mirConnection:
         print(req)
 
     #Still need to test
-    def endMission(missionID):
+    def endMission(self, missionID):
         http = urllib3.PoolManager()
         req = http.request('DELETE', 'http://192.168.1.8:8080/v2.0.0/mission_queue/' + missionID, 
-            headers={'Content-Type': 'application/json', 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='}, 
-            body=missionBody)
-        print(req)
+            headers={'Content-Type': 'application/json', 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
+        missions = json.loads(req.data.decode('utf-8'))
+        print("Req: ", req)
+        print("Status: ", missions)
