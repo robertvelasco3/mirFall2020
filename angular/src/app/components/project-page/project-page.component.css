@@ -1,0 +1,7 @@
+.projDisp button {
+    padding: 10px 10px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 20px;
+    float: left;
+}

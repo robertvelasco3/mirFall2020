@@ -1,0 +1,19 @@
+<div class="mainpage">
+    <table>
+        <thead>
+            <tr>
+                <th>Mission</th>
+                <th>Mission ID</th>
+                <th>Mission Status</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let equip of sampleEquipment">
+                <td>{{ equip.name }}</td>
+                <td>{{ equip.id }}</td>
+                <td>{{ equip.isRunning }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,16 @@
+<div>
+    <div class="side">
+        <div class="select" *ngFor="let pan of panels">
+            <button (click)="selectPanel(pan.name)">{{ pan.name }}</button>
+        </div>
+    </div>
+    <div class="rightdisp" >
+        <app-home-page *ngIf="homeOn"></app-home-page>
+        <app-data-page *ngIf="dataOn"></app-data-page>
+        <app-equipment-page *ngIf="equipOn"></app-equipment-page>
+        <app-project-page *ngIf="projectOn"></app-project-page>
+        <app-team-page *ngIf="teamOn"></app-team-page>
+        <app-contact-info-page *ngIf="contactOn"></app-contact-info-page>
+        <app-mir-sidebar *ngIf="mirOn"></app-mir-sidebar>
+    </div>
+</div>
