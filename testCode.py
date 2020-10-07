@@ -30,22 +30,30 @@ mir = mirConnection()
 motor = motorControl()
 
 print('Program is running!')
+Dock()
+previous = None
+hasDocked = False
 while(True):
     command = input()
-    if command == 'dock':
+    if command == 'dock' and command != previous and not hasDocked:
+        mir.endMission(GoToA)
         Dock()
+        hasDocked = True
     elif command == 'unload':
         Unload()
     elif command == 'stop':
         Stop()
     elif command == 'load':
         Load()
-    elif command == 'undock':
+    elif command == 'undock' and command != previous:
         Undock()
     elif command == 'end':
         print('Ending Code')
         break
     else:
         print('Error: command not valid')
+    previous = command
+    mir.deleteMissions()
+    mir.getMissions()
 
 motor.cleanUp()
