@@ -12,12 +12,9 @@ export class SidebarComponent implements OnInit {
   constructor() { }
 
   homeOn:boolean = true;
-  dataOn:boolean = false;
-  equipOn:boolean = false;
   projectOn:boolean = false;
+  missionOn:boolean = false;
   teamOn:boolean = false;
-  contactOn:boolean = false;
-  mirOn:boolean = false;
 
   ngOnInit() {
     this.panels = [
@@ -26,27 +23,15 @@ export class SidebarComponent implements OnInit {
         isOpen:false
       },
       {
-        name:"Data",
+        name:"Project",
         isOpen:false
       },
       {
-        name:"Equipment",
+        name:"Mission",
         isOpen:true
       },
       {
-        name:"Projects",
-        isOpen:false
-      },
-      {
         name:"Team",
-        isOpen:false
-      },
-      {
-        name:"Contact Info",
-        isOpen:false
-      },
-      {
-        name:"MiR100",
         isOpen:false
       }
     ]
@@ -67,29 +52,17 @@ export class SidebarComponent implements OnInit {
       {
         this.homeOn = pan.isOpen;
       }
-      else if(pan.name == "Data")
-      {
-        this.dataOn = pan.isOpen;
-      }
-      else if(pan.name == "Equipment")
-      {
-        this.equipOn = pan.isOpen;
-      }
-      else if(pan.name == "Projects")
+      else if(pan.name == "Project")
       {
         this.projectOn = pan.isOpen;
+      }
+      else if(pan.name == "Mission")
+      {
+        this.missionOn = pan.isOpen;
       }
       else if(pan.name == "Team")
       {
         this.teamOn = pan.isOpen;
-      }
-      else if(pan.name == "Contact Info")
-      {
-        this.contactOn = pan.isOpen;
-      }
-      else if(pan.name == "MiR100")
-      {
-        this.mirOn = pan.isOpen;
       }
     }
 

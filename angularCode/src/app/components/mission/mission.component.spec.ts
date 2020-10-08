@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MirSidebarComponent } from './mir-sidebar.component';
+import { MissionComponent } from './mission.component';
 
-describe('MirSidebarComponent', () => {
-  let component: MirSidebarComponent;
-  let fixture: ComponentFixture<MirSidebarComponent>;
+describe('MissionComponent', () => {
+  let component: MissionComponent;
+  let fixture: ComponentFixture<MissionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MirSidebarComponent ]
+      declarations: [ MissionComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MirSidebarComponent);
+    fixture = TestBed.createComponent(MissionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
