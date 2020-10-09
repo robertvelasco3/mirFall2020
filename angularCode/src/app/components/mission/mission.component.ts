@@ -9,7 +9,17 @@ export class MissionComponent implements OnInit {
 
   constructor() { }
 
+  message:string = "";
+
   ngOnInit() {
+  }
+
+  deliver() {
+    this.message = "Parts delivering!";
+  }
+
+  stopProgram() {
+    this.message = "Stopping program..."
   }
 
 }

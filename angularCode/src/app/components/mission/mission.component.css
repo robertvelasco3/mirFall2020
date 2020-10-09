@@ -1,0 +1,26 @@
+.deliver button {
+    background: #00ff00;
+    color: #000000;
+    padding: 15px 15px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 20px;
+    float: left;
+}
+
+.stop button {
+    background: #ff3300;
+    color: #000000;
+    padding: 15px 15px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 20px;
+    float: left;
+}
+
+.image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+}

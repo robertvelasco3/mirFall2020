@@ -3,6 +3,7 @@
         <div class="select" *ngFor="let pan of panels">
             <button (click)="selectPanel(pan.name)">{{ pan.name }}</button>
         </div>
+        <p></p>
     </div>
     <div class="rightdisp" >
         <app-home-page *ngIf="homeOn"></app-home-page>
