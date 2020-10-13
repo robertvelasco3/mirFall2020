@@ -89,12 +89,13 @@ def work_in_loop():
         Undock()
     elif command == 'go':
         Docking()
-    elif end:
-        print('Ending Code')
-        break
+    #elif end:
+      #  print('Ending Code')
+        
     else:
         print('Error: command not valid')
     previous = command
+    print (command)
     print("hasDocked:", hasDocked)
 
 def work_setup():
@@ -114,7 +115,7 @@ def work_pause():
 
 
 def worker():
-    wrok_setup()
+    work_setup()
     while True:
         startE.wait()
         if (endE.isSet()):
@@ -129,10 +130,14 @@ def worker():
                 work_pause()
                 break
 
+def flask_run():
+    app.run(host="localhost", port="1234", debug=False)
+
 if __name__ == '__main__':
     startE.clear()
     stopE.clear()
     endE.clear()
-    t = threading.Thread(target=worker)
+    t = threading.Thread(target=flask_run)
     t.start()
-    app.run(host="localhost", port="1234", debug=True)
+    worker()
+    

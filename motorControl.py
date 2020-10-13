@@ -43,8 +43,8 @@ class motorControl:
         self.reverse1.ChangeDutyCycle(0)
         
         GPIO.output(Motor2E,GPIO.HIGH)
-        self.forward2.ChangeDutyCycle(0)
-        self.reverse2.ChangeDutyCycle(100)
+        self.forward2.ChangeDutyCycle(100)
+        self.reverse2.ChangeDutyCycle(0)
         
     def moveBackward(self,seconds):
         # this will run both motors in reverse with 100% speed.
@@ -54,8 +54,8 @@ class motorControl:
         self.reverse1.ChangeDutyCycle(100)
         
         GPIO.output(Motor2E,GPIO.HIGH)
-        self.forward2.ChangeDutyCycle(100)
-        self.reverse2.ChangeDutyCycle(0)
+        self.forward2.ChangeDutyCycle(0)
+        self.reverse2.ChangeDutyCycle(100)
     
     def stop(self):
         self.forward1.ChangeDutyCycle(0)
