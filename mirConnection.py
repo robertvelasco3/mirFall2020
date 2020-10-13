@@ -29,7 +29,6 @@ class mirConnection:
         print("Req: ", req)
         print("Status: ", missions)
     
-    #still need to test
     #GET status, then grab the 'distance to next target' value (in meters)
     def getDistFromTarget(self):
         http = urllib3.PoolManager()
@@ -38,6 +37,7 @@ class mirConnection:
         status = json.loads(req.data.decode('utf-8'))
         distance = status['distance_to_next_target']
         print("Distance To Target: ", distance)
+        print("Status:", status)
         return distance
     
     #Still need to test

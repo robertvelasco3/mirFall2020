@@ -1,5 +1,6 @@
 from mirConnection import mirConnection
 from motorControl import motorControl
+from time import sleep
 
 # mission_id for methods GoToA and GoToStart for mir
 GoToA = "cfbc2ff2-0363-11eb-99a6-000129922c9e"
@@ -25,21 +26,35 @@ def Undock():
     print('Currently undocking the MiR100')
     mir.performMission(GoToStart)
 
+def Docking():
+    Dock()
+    sleep(1)
+    while(True):
+        if mir.getDistFromTarget() < 2.1:
+            break
+        else:
+            print('not there')
+    mir.deleteMissions()
+    Dock()
+
+#sleep(60)
 
 mir = mirConnection()
 motor = motorControl()
 
 print('Program is running!')
-Dock()
+
 previous = None
 hasDocked = False
 end = False
+command = ''
+hasDocked = False
 while(True):
     command = input()
     if command == 'dock' and command != previous and not hasDocked:
         #mir.endMission(GoToA)
         #Dock()
-        hasDocked = True
+        print("Im here")
     elif command == 'unload':
         Unload()
     elif command == 'stop':
@@ -48,7 +63,9 @@ while(True):
         Load()
     elif command == 'undock' and command != previous:
         Undock()
-        break
+        #break
+    elif command == 'go':
+        Docking()
     elif end:
         print('Ending Code')
         break
