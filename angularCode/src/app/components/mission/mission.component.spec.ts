@@ -1,9 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MissionComponent } from './mission.component';
+//import { MissionService } from './mission.service';
 
 describe('MissionComponent', () => {
   let component: MissionComponent;
+  //let service: MissionService;
   let fixture: ComponentFixture<MissionComponent>;
 
   beforeEach(async(() => {

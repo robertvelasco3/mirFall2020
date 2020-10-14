@@ -3,6 +3,7 @@ import threading
 from mirConnection import mirConnection
 from motorControl import motorControl
 from time import sleep
+import sys, termios
 
 
 GoToA = "cfbc2ff2-0363-11eb-99a6-000129922c9e"
@@ -59,24 +60,18 @@ endE = threading.Event()
 @app.route("/start")
 def start():
     startE.set()
-    return "Start Done"
+    stopE.clear()
+    return '{"res":"Start"}'
 
     
 @app.route("/stop")
 def stop():
     stopE.set()
     startE.clear()
-    return "Stop Done"
+    return '{"res":"Stop"}'
 
-@app.route("/end")
-def end():
-    stopE.set()
-    startE.clear()
-    endE.set()
-    return "Stop Done"
 
-def work_in_loop():
-    command = input()
+def work_in_loop(command):
     if command == 'dock' and command != previous and not hasDocked:
         print("Im here")
     elif command == 'unload':
@@ -100,35 +95,32 @@ def work_in_loop():
 
 def work_setup():
     print('Program is running!')
-    #previous = None
-    #hasDocked = False
-    #end = False
-    #command = ''
-    #hasDocked = False
+    previous = None
+    hasDocked = False
+    end = False
+    command = ''
+    hasDocked = False
 
-def work_end():
-    Undock()
-    motor.cleanUp()
+#end
+    #Undock()
+    #motor.cleanUp()
+    ### we will not end the service! as we cannot terminate flask
 
-def work_pause():
-    pass
 
 
 def worker():
     work_setup()
     while True:
         startE.wait()
-        if (endE.isSet()):
-            work_end()
-            break
         print ("starting")
         while True:
-            work_in_loop()
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+            command = input()
             if stopE.isSet():
                 print ("stopping")
                 stopE.clear()
-                work_pause()
                 break
+            work_in_loop(command)
 
 def flask_run():
     app.run(host="localhost", port="1234", debug=False)
@@ -140,4 +132,5 @@ if __name__ == '__main__':
     t = threading.Thread(target=flask_run)
     t.start()
     worker()
+    exit(2)
     
