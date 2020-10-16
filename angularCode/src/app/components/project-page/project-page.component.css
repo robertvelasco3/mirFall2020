@@ -1,7 +1,6 @@
-.projDisp button {
-    padding: 10px 10px;
-    width: 100%;
-    cursor: pointer;
-    font-size: 20px;
-    float: left;
+.pageHeader {
+    color: #333;
+    text-align: center;
+    text-decoration: underline;
+    font-size: 48px;
 }

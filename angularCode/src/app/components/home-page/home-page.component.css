@@ -1,0 +1,18 @@
+.pageHeader {
+    color: #333;
+    text-align: center;
+    text-decoration: underline;
+    font-size: 48px;
+}
+
+.info {
+    font-size: 24px;
+    text-align: center;
+}
+
+.homeImage {
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
