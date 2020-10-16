@@ -11,8 +11,13 @@
 }
 
 .homeImage {
-    width: 100%;
+    width: 80%;
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.imgNote {
+    font-size: 20px;
+    text-align: center;
 }
