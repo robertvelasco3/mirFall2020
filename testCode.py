@@ -2,7 +2,7 @@ from mirConnection import mirConnection
 from motorControl import motorControl
 from time import sleep
 
-# mission_id for methods GoToA and GoToStart for mir
+# mission_id for methods GoToA, GoToStart, and GoToSafe for mir
 GoToA = "cfbc2ff2-0363-11eb-99a6-000129922c9e"
 GoToStart = "94601816-0363-11eb-99a6-000129922c9e"
 GoToSafe = "130b5cac-17dc-11eb-89d2-000129922c9e"
@@ -34,21 +34,21 @@ def Docking():
     while(True):
         dist, error = mir.getDistFromTarget()
         if error:
-            mir.clearError()
-            mir.makeReady()
-            mir.performMission(GoToSafe)
+            handleError()
+            break
+        if dist < 2.1 and not stopped:
+            mir.deleteMissions()
+            Dock()
+            stopped = True
+        elif dist == 0:
             break
         else:
-            if dist < 2.1 and not stopped:
-                mir.deleteMissions()
-                Dock()
-                stopped = True
-            elif dist == 0:
-                break
-            else:
-                print('not there')
+            print('not there')
 
-#sleep(60)
+def handleError():
+    mir.clearError()
+    mir.makeReady()
+    mir.performMission(GoToSafe)
 
 mir = mirConnection()
 motor = motorControl()
@@ -74,11 +74,8 @@ while(True):
         Load()
     elif command == 'undock' and command != previous:
         Undock()
-        #break
     elif command == 'go':
         Docking()
-    elif command == 'get':
-        mir.getMissions()
     elif end:
         print('Ending Code')
         break
@@ -86,7 +83,5 @@ while(True):
         print('Error: command not valid')
     previous = command
     print("hasDocked:", hasDocked)
-    #mir.deleteMissions()
-    #mir.getMissions()
 
 motor.cleanUp()
