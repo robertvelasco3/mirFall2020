@@ -12,7 +12,7 @@ class mirConnection:
         
     def getMissions(self):
         http = urllib3.PoolManager()
-        req = http.request('GET', 'http://192.168.1.8:8080/v2.0.0/mission_queue', headers={'Content-Type': 'application/json',
+        req = http.request('GET', 'http://192.168.1.8:8080/v2.0.0/missions', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
         missions = json.loads(req.data.decode('utf-8'))
         print("Req: ", req)
@@ -35,10 +35,42 @@ class mirConnection:
         req = http.request('GET', 'http://192.168.1.8:8080/v2.0.0/status', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
         status = json.loads(req.data.decode('utf-8'))
-        distance = status['distance_to_next_target']
-        print("Distance To Target: ", distance)
         print("Status:", status)
-        return distance
+        distance = status['distance_to_next_target']
+        errors = status['errors']
+        print("Distance To Target: ", distance)
+        print("Errors:", errors)
+        return (distance, errors)
+    
+    def clearError(self):
+        statusBody = json.dumps({"clear_error" : True})
+        print("statusBod", statusBody)
+        http = urllib3.PoolManager()
+        req = http.request('PUT', 'http://192.168.1.8:8080/v2.0.0/status', headers={'Content-Type': 'application/json',
+                'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='},
+                           body=statusBody)
+        status = json.loads(req.data.decode('utf-8'))
+        print("___", "*Clear Error*")
+        print("Status:", status)
+        distance = status['distance_to_next_target']
+        errors = status['errors']
+        print("Distance To Target: ", distance)
+        print("Errors:", errors)
+    
+    def makeReady(self):
+        statusBody = json.dumps({"state_id" : 3})
+        print("statusBod", statusBody)
+        http = urllib3.PoolManager()
+        req = http.request('PUT', 'http://192.168.1.8:8080/v2.0.0/status', headers={'Content-Type': 'application/json',
+                'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='},
+                           body=statusBody)
+        status = json.loads(req.data.decode('utf-8'))
+        print("___", "*Clear Error*")
+        print("Status:", status)
+        distance = status['distance_to_next_target']
+        errors = status['errors']
+        print("Distance To Target: ", distance)
+        print("Errors:", errors)
     
     #Still need to test
     def deleteMissions(self):

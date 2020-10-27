@@ -5,6 +5,7 @@ from time import sleep
 # mission_id for methods GoToA and GoToStart for mir
 GoToA = "cfbc2ff2-0363-11eb-99a6-000129922c9e"
 GoToStart = "94601816-0363-11eb-99a6-000129922c9e"
+GoToSafe = "130b5cac-17dc-11eb-89d2-000129922c9e"
 
 def Dock():
     print('Currently docking the MiR100')
@@ -29,13 +30,23 @@ def Undock():
 def Docking():
     Dock()
     sleep(1)
+    stopped = False
     while(True):
-        if mir.getDistFromTarget() < 2.1:
+        dist, error = mir.getDistFromTarget()
+        if error:
+            mir.clearError()
+            mir.makeReady()
+            mir.performMission(GoToSafe)
             break
         else:
-            print('not there')
-    mir.deleteMissions()
-    Dock()
+            if dist < 2.1 and not stopped:
+                mir.deleteMissions()
+                Dock()
+                stopped = True
+            elif dist == 0:
+                break
+            else:
+                print('not there')
 
 #sleep(60)
 
@@ -66,6 +77,8 @@ while(True):
         #break
     elif command == 'go':
         Docking()
+    elif command == 'get':
+        mir.getMissions()
     elif end:
         print('Ending Code')
         break
