@@ -19,6 +19,8 @@ class mirControlThread:
         self.curTime= time.time()
         self.inputTime = self.curTime
         self.inputCommand = None
+        self.error = False
+        self.errorJSON = None
 
     def inputProducer(self):
         '''We are only interested in the most recent command as it should only change after mir acted to it'''
@@ -28,17 +30,25 @@ class mirControlThread:
             self.inputTime = time.time()
 
     def resume(self):
+        if self.error:
+            return self.errorJSON
         self.pauseE.clear()
         self.curTime= time.time()
+        return '{"res":"Running"}'
 
     def pause(self):
+        if self.error:
+            return self.errorJSON
         self.pauseE.set()
+        return '{"res":"Paused"}'
 
     def handleError(self):
         #Read network, mir status, take action if necessary
         req, status = self.mirCon.getStatusText()
         while req.statue != 200:
             #lost connection, nothing we can really do
+            self.errorJSON = '{"Res":"MiR Lost Connection"}'
+            self.error = True
             print("Connection Lost!!!")
             time.sleep(self.tick*3)
             req, status = self.mirCon.getStatusText()
@@ -61,13 +71,12 @@ app = Flask(__name__)
 
 @app.route("/resume")
 def resume():
-    mct.resume()
-    return '{"res":"Running"}'
+    return mct.resume()
 
 @app.route("/pause")
 def pause():
-    mct.pause()
-    return '{"res":"Paused"}'
+    return mct.pause()
+    
 
 def flask_run():
     app.run(host="localhost", port="1234", debug=False)
