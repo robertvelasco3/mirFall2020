@@ -1,5 +1,6 @@
 from flask import Flask
 from mirControl import mirControl
+from mirConnection import mirConnection
 import threading
 import sys, termios
 import time
@@ -11,7 +12,8 @@ class mirControlThread:
     def __init__(self):
         self.pauseE = threading.Event()
         self.pauseE.set()
-        self.mirCtrl = mirControl()
+        self.mirCon = mirConnection() 
+        self.mirCtrl = mirControl(mir = self.mirCon)
         self.timeout = 5
         self.tick = 0.2 #may not need this if script reacts too slow
         self.curTime= time.time()
@@ -34,7 +36,13 @@ class mirControlThread:
 
     def handleError(self):
         #Read network, mir status, take action if necessary
-        pass
+        req, status = self.mirCon.getStatusText()
+        while req.statue != 200:
+            #lost connection, nothing we can really do
+            print("Connection Lost!!!")
+            time.sleep(self.tick*3)
+            req, status = self.mirCon.getStatusText()
+        
 
     def run(self):
         t = threading.Thread(target=self.inputProducer)
@@ -56,7 +64,6 @@ def resume():
     mct.resume()
     return '{"res":"Running"}'
 
-    
 @app.route("/pause")
 def pause():
     mct.pause()

@@ -5,14 +5,13 @@ from time import sleep
 class mirControl:
     '''Class used for parsing the command string and controling the mir100 robot and belt conveyer motor'''
 
-    def __init__(self):
+    def __init__(self, mir = mirConnection()):
         # mission_id for methods GoToA, GoToStart, and GoToSafe for mir
         self.GoToA = "cfbc2ff2-0363-11eb-99a6-000129922c9e"
         self.GoToStart = "94601816-0363-11eb-99a6-000129922c9e"
         self.GoToSafe = "130b5cac-17dc-11eb-89d2-000129922c9e"
-        self.mir = mirConnection()
+        self.mir = mir
         self.motor = motorControl()
-
         self.previous = None
         self.hasDocked = False
         self.end = False

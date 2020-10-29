@@ -8,6 +8,13 @@ class mirConnection:
     def updateURL(self, newurl):
         self.mirurl = newurl
 
+    def getStatusText(self):
+        http = urllib3.PoolManager()
+        req = http.request('GET', self.mirurl + '/v2.0.0/status', headers={'Content-Type': 'application/json',
+                'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
+        status = json.loads(req.data.decode('utf-8'))
+        return req, status
+
     def getStatus(self):
         http = urllib3.PoolManager()
         req = http.request('GET', self.mirurl + '/v2.0.0/status', headers={'Content-Type': 'application/json',
