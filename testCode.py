@@ -1,3 +1,5 @@
+#### obsolete, use mirControl.py instead
+
 from mirConnection import mirConnection
 from motorControl import motorControl
 from time import sleep

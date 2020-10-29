@@ -2,16 +2,22 @@ import json
 import urllib3
 
 class mirConnection:
+    def __init__(self):
+        self.mirurl = "http://192.168.1.8:8080"
+    
+    def updateURL(self, newurl):
+        self.mirurl = newurl
+
     def getStatus(self):
         http = urllib3.PoolManager()
-        req = http.request('GET', 'http://192.168.1.8:8080/v2.0.0/status', headers={'Content-Type': 'application/json',
+        req = http.request('GET', self.mirurl + '/v2.0.0/status', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
         status = json.loads(req.data.decode('utf-8'))
         print("Status: ", status)
         
     def getMissions(self):
         http = urllib3.PoolManager()
-        req = http.request('GET', 'http://192.168.1.8:8080/v2.0.0/missions', headers={'Content-Type': 'application/json',
+        req = http.request('GET', self.mirurl + '/v2.0.0/missions', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
         missions = json.loads(req.data.decode('utf-8'))
         print("Missions: ", missions)
@@ -20,7 +26,7 @@ class mirConnection:
     def performMission(self, missionID):
         missionBody = json.dumps({"mission_id" : missionID})
         http = urllib3.PoolManager()
-        req = http.request('POST', 'http://192.168.1.8:8080/v2.0.0/mission_queue', 
+        req = http.request('POST', self.mirurl + '/v2.0.0/mission_queue', 
             headers={'Content-Type': 'application/json', 'authorization': ' Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='}, 
             body=missionBody)
         missions = json.loads(req.data.decode('utf-8'))
@@ -34,7 +40,7 @@ class mirConnection:
     #GET status, then grab the 'distance to next target' value (in meters) and any current errors
     def getDistFromTarget(self):
         http = urllib3.PoolManager()
-        req = http.request('GET', 'http://192.168.1.8:8080/v2.0.0/status', headers={'Content-Type': 'application/json',
+        req = http.request('GET', self.mirurl + '/v2.0.0/status', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
         status = json.loads(req.data.decode('utf-8'))
         print("Status:", status)
@@ -49,7 +55,7 @@ class mirConnection:
     def clearError(self):
         statusBody = json.dumps({"clear_error" : True})
         http = urllib3.PoolManager()
-        req = http.request('PUT', 'http://192.168.1.8:8080/v2.0.0/status', headers={'Content-Type': 'application/json',
+        req = http.request('PUT', self.mirurl + '/v2.0.0/status', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='},
                            body=statusBody)
         status = json.loads(req.data.decode('utf-8'))
@@ -63,7 +69,7 @@ class mirConnection:
     def makeReady(self):
         statusBody = json.dumps({"state_id" : 3})
         http = urllib3.PoolManager()
-        req = http.request('PUT', 'http://192.168.1.8:8080/v2.0.0/status', headers={'Content-Type': 'application/json',
+        req = http.request('PUT', self.mirurl + '/v2.0.0/status', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='},
                            body=statusBody)
         status = json.loads(req.data.decode('utf-8'))
@@ -75,7 +81,7 @@ class mirConnection:
     # Deletes the current missions in the MiR queue
     def deleteMissions(self):
         http = urllib3.PoolManager()
-        req = http.request('DELETE', 'http://192.168.1.8:8080/v2.0.0/mission_queue/', 
+        req = http.request('DELETE', self.mirurl + '/v2.0.0/mission_queue/', 
             headers={'Content-Type': 'application/json', 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
         #response = json.loads(req.data.decode('utf-8'))
         if(req.status == 200):

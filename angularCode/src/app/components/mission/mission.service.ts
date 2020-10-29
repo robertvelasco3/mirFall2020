@@ -9,12 +9,12 @@ import { catchError, retry } from 'rxjs/operators';
 export class MissionService {
     constructor(private http: HttpClient) { }
     getStart() {
-        return this.http.get("http://192.168.1.8:1234/start", {responseType: "text"});//,{
+        return this.http.get("http://192.168.1.8:1234/resume", {responseType: "text"});//,{
         //    responseType:'text'});
         
     }
     getStop() {
-        return this.http.get("http://192.168.1.8:1234/stop", {responseType: "text"});//,{
+        return this.http.get("http://192.168.1.8:1234/pause", {responseType: "text"});//,{
         //    responseType:'text'});
     }
 }
