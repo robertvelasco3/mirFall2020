@@ -39,14 +39,20 @@ class mirControl:
         self.mir.performMission(self.GoToStart)
 
     def Docking(self):
+        pathCount = 0
         self.Dock()
-        sleep(1)
+        sleep(0.1)
         stopped = False
+        oldDist = 10000
         while(True):
+            sleep(0.2)
             dist, error = self.mir.getDistFromTarget()
             if error:
                 self.handleError()
                 break
+            if dist > (oldDist + 0.5):
+                pathCount += 1
+                print("MiR altered its path. pathCount = ", pathCount)
             if dist < 2.1 and not stopped:
                 self.mir.deleteMissions()
                 self.Dock()
@@ -55,6 +61,12 @@ class mirControl:
                 break
             else:
                 print('not there')
+            oldDist = dist
+            if(pathCount == 4):
+                print("Error: Path changed ", pathCount, " times. Stopping program to avoid endless loop.")
+                self.mir.deleteMissions()
+                self.handleError()
+                break
 
     def handleError(self):
         self.mir.clearError()
@@ -63,11 +75,11 @@ class mirControl:
 
     def processCommand(self, command):
         '''Process incomming command string and run once accordingly'''
-        if command == 'dock' and command != self.previous and not self.hasDocked:
+        #if command == 'dock' and command != self.previous and not self.hasDocked:
             #mir.endMission(GoToA)
             #Dock()
-            print("Im here")
-        elif command == 'unload':
+            #print("Im here")
+        if command == 'unload':
             self.Unload()
         elif command == 'stop':
             self.Stop()
@@ -75,7 +87,7 @@ class mirControl:
             self.Load()
         elif command == 'undock' and command != self.previous:
             self.Undock()
-        elif command == 'go':
+        elif command == 'dock':
             self.Docking()
         elif self.end:
             print('Ending Code')

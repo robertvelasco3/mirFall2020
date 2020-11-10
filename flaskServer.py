@@ -2,9 +2,8 @@ from flask import Flask
 from mirControl import mirControl
 from mirConnection import mirConnection
 import threading
-import sys, termios
+import sys
 import time
-import Queue
 
 class mirControlThread:
     '''Thread control to pause and resume mir script, controled by client HTTP request'''
@@ -30,6 +29,7 @@ class mirControlThread:
             self.inputTime = time.time()
 
     def resume(self):
+        print("resume called")
         if self.error:
             return self.errorJSON
         self.pauseE.clear()
@@ -37,6 +37,7 @@ class mirControlThread:
         return '{"res":"Running"}'
 
     def pause(self):
+        print("pause called")
         if self.error:
             return self.errorJSON
         self.pauseE.set()
@@ -45,24 +46,29 @@ class mirControlThread:
     def handleError(self):
         #Read network, mir status, take action if necessary
         req, status = self.mirCon.getStatusText()
-        while req.statue != 200:
+        while req.status >299 or req.status < 200:
             #lost connection, nothing we can really do
             self.errorJSON = '{"Res":"MiR Lost Connection"}'
             self.error = True
             print("Connection Lost!!!")
             time.sleep(self.tick*3)
             req, status = self.mirCon.getStatusText()
+        if (len(status['errors']) != 0):
+            print(status['errors'])
         
 
     def run(self):
         t = threading.Thread(target=self.inputProducer)
         t.start()
+        self.pauseE.wait()
+        self.mirCtrl.processCommand("dock")
         while(True):
             time.sleep(self.tick)
             if self.pauseE.isSet():
                 continue
             self.handleError()
             if self.inputTime > self.curTime:
+                print (self.inputCommand)
                 self.mirCtrl.processCommand(self.inputCommand)
                 self.curTime = self.inputTime
 

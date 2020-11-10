@@ -30,6 +30,7 @@ def Undock():
     mir.performMission(GoToStart)
 
 def Docking():
+    pathCount = 0
     Dock()
     sleep(1)
     stopped = False
@@ -38,6 +39,9 @@ def Docking():
         if error:
             handleError()
             break
+        if dist > (dist + 0.5):
+            pathCount += 1
+            print("MiR altered its path. pathCount = ", pathCount)
         if dist < 2.1 and not stopped:
             mir.deleteMissions()
             Dock()
@@ -46,6 +50,11 @@ def Docking():
             break
         else:
             print('not there')
+        oldDist = dist
+        if(pathCount == 3):
+            print("Error: Path changed ", pathCount, " times. Stopping program to avoid endless loop.")
+            handleError()
+            break
 
 def handleError():
     mir.clearError()

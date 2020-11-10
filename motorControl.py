@@ -12,6 +12,8 @@ Motor2A = 10 # Input 1 for motor 2
 Motor2B = 22 # Input 2 for motor 2
 
 class motorControl:
+    #Constructor
+    #Description: initializes both motors
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
         
@@ -35,6 +37,9 @@ class motorControl:
         self.forward2.start(0)
         self.reverse2.start(0)
     
+    #Inputs:  seconds (Not useed anymore)
+    #Outputs: None
+    #Description: moves all motors forward
     def moveForward(self, seconds):
         # this will run both motors in the forward direction with 100% speed.
         print("Move both motors forward")
@@ -46,6 +51,9 @@ class motorControl:
         self.forward2.ChangeDutyCycle(100)
         self.reverse2.ChangeDutyCycle(0)
         
+    #Inputs:  seconds (Not useed anymore)
+    #Outputs: None
+    #Description: moves all motors backward
     def moveBackward(self,seconds):
         # this will run both motors in reverse with 100% speed.
         print("Move both motors backward")
@@ -57,6 +65,9 @@ class motorControl:
         self.forward2.ChangeDutyCycle(0)
         self.reverse2.ChangeDutyCycle(100)
     
+    #Inputs:  None
+    #Outputs: None
+    #Description: Stops both motors
     def stop(self):
         self.forward1.ChangeDutyCycle(0)
         self.reverse1.ChangeDutyCycle(0)
@@ -64,6 +75,9 @@ class motorControl:
         self.forward2.ChangeDutyCycle(0)
         self.reverse2.ChangeDutyCycle(0)
     
+    #Inputs:  None
+    #Outputs: None
+    #Description: Stops all motors, "cleans up" GPIO pin connections, to be called at the end of the program
     def cleanUp(self):
         #stop motor
         print("Clean Up GPIO Pins")
