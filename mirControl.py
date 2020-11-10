@@ -38,6 +38,12 @@ class mirControl:
         print('Currently undocking the MiR100')
         self.mir.performMission(self.GoToStart)
 
+#Inputs: None
+#outpus: None
+#description: performs regular dock until the distance from target is 2.1 meters away.
+#             Then it stops and continues docking process. If there are any errors, it calls handle error.
+#             Path count is a variable that increments when the path length changes. Once path count gets
+#.            to 4 (we assume path is unreachable) missions are deleted from the queue and the error handler is called.
     def Docking(self):
         pathCount = 0
         self.Dock()
