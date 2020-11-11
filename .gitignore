@@ -1,0 +1,4 @@
+
+.git/
+*.pyc
+angularCode/node_modules

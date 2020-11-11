@@ -8,7 +8,9 @@ import time
 class mirControlThread:
     '''Thread control to pause and resume mir script, controled by client HTTP request'''
     ### we will not end the service! as we cannot terminate flask
+
     def __init__(self):
+        "initialize newlly created class with default values"
         self.pauseE = threading.Event()
         self.pauseE.set()
         self.mirCon = mirConnection() 
@@ -22,21 +24,26 @@ class mirControlThread:
         self.errorJSON = None
 
     def inputProducer(self):
-        '''We are only interested in the most recent command as it should only change after mir acted to it'''
+        '''Thread to accept input from standard input (QR scanner) with timestamp'''
+        #input() blocks the program from running so this has to be made asynchronic 
+        # so we have a chance to do something else in the main control thread.
+        #We are only interested in the most recent command as it should only change after mir acted to it
         while True:
             cmd = input()
             self.inputCommand = cmd
             self.inputTime = time.time()
 
     def resume(self):
+        '''Asynchronic call to resume the control thread'''
         print("resume called")
         if self.error:
             return self.errorJSON
         self.pauseE.clear()
-        self.curTime= time.time()
+        self.curTime= time.time()#set time so script ignores old input
         return '{"res":"Running"}'
 
     def pause(self):
+        '''Asynchronic call to pause the control thread'''
         print("pause called")
         if self.error:
             return self.errorJSON
@@ -44,6 +51,7 @@ class mirControlThread:
         return '{"res":"Paused"}'
 
     def handleError(self):
+        '''Uses mir control class to communicate with mir to see if error exitst'''
         #Read network, mir status, take action if necessary
         req, status = self.mirCon.getStatusText()
         while req.status >299 or req.status < 200:
@@ -58,13 +66,15 @@ class mirControlThread:
         
 
     def run(self):
-        t = threading.Thread(target=self.inputProducer)
+        '''Control thread that check error repeatly and calls mir control when we have new input'''
+        t = threading.Thread(target=self.inputProducer) #create input thread
         t.start()
         self.pauseE.wait()
         self.mirCtrl.processCommand("dock")
         while(True):
             time.sleep(self.tick)
             if self.pauseE.isSet():
+                #Skips following if script is paused
                 continue
             self.handleError()
             if self.inputTime > self.curTime:
@@ -72,8 +82,12 @@ class mirControlThread:
                 self.mirCtrl.processCommand(self.inputCommand)
                 self.curTime = self.inputTime
 
+
 mct = mirControlThread()
 app = Flask(__name__)
+
+#Flask API service calls
+#forwarded into mir control thread class
 
 @app.route("/resume")
 def resume():
@@ -83,11 +97,12 @@ def resume():
 def pause():
     return mct.pause()
     
-
+#flask thread
 def flask_run():
     app.run(host="localhost", port="1234", debug=False)
 
 if __name__ == '__main__':
+    '''Setup flask to run in a separate thread and calls mir control thread to run'''
     t = threading.Thread(target=flask_run)
     t.start()
     mct.run()
