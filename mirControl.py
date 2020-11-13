@@ -47,7 +47,7 @@ class mirControl:
     def Docking(self):
         pathCount = 0
         self.Dock()
-        sleep(0.1)
+        sleep(0.5)
         stopped = False
         oldDist = 10000
         while(True):
@@ -63,6 +63,7 @@ class mirControl:
                 self.mir.deleteMissions()
                 self.Dock()
                 stopped = True
+                break
             elif dist == 0:
                 break
             else:

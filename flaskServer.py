@@ -38,8 +38,9 @@ class mirControlThread:
         print("resume called")
         if self.error:
             return self.errorJSON
-        self.pauseE.clear()
+        self.pauseE.set()
         self.curTime= time.time()#set time so script ignores old input
+        #self.mirCtrl.processCommand("dock")
         return '{"res":"Running"}'
 
     def pause(self):
@@ -47,7 +48,7 @@ class mirControlThread:
         print("pause called")
         if self.error:
             return self.errorJSON
-        self.pauseE.set()
+        self.pauseE.clear()
         return '{"res":"Paused"}'
 
     def handleError(self):
@@ -69,11 +70,12 @@ class mirControlThread:
         '''Control thread that check error repeatly and calls mir control when we have new input'''
         t = threading.Thread(target=self.inputProducer) #create input thread
         t.start()
+        self.pauseE.clear()
         self.pauseE.wait()
         self.mirCtrl.processCommand("dock")
         while(True):
             time.sleep(self.tick)
-            if self.pauseE.isSet():
+            if not self.pauseE.isSet():
                 #Skips following if script is paused
                 continue
             self.handleError()
@@ -99,7 +101,7 @@ def pause():
     
 #flask thread
 def flask_run():
-    app.run(host="localhost", port="1234", debug=False)
+    app.run(host="0.0.0.0", port="1234", debug=False)
 
 if __name__ == '__main__':
     '''Setup flask to run in a separate thread and calls mir control thread to run'''
