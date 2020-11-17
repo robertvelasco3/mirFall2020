@@ -37,20 +37,33 @@ class mirControlThread:
 
     def resume(self):
         '''Asynchronic call to resume the control thread'''
-        print("resume called")
+        #print("resume called")
         if self.error:
             return self.errorJSON
+        if self.pauseE.is_set():
+            return "Already delivering!"
         self.pauseE.set()
         self.curTime= time.time()#set time so script ignores old input
         return "Parts delivering!"
 
     def pause(self):
         '''Asynchronic call to pause the control thread'''
-        print("pause called")
+        #print("pause called")
         if self.error:
             return self.errorJSON
+        if not self.pauseE.is_set():
+            return "Already Paused!"
         self.pauseE.clear()
         return "Pausing program..."
+
+    def safe(self):
+        if mirCtrl.safe():
+            return "Resuming from safety location"
+        else:
+            return "Not at safety location"
+
+    def status():
+        return " "
 
     def handleError(self):
         '''Uses mir control class to communicate with mir to see if error exitst'''
@@ -100,6 +113,14 @@ def resume():
 @app.route("/pause")
 def pause():
     return mct.pause()
+
+@app.route("/safe")
+def safe():
+    return mct.safe()
+
+@app.route("/status")
+def status():
+    return mct.status()
     
 #flask thread
 def flask_run():
