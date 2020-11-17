@@ -1,8 +1,10 @@
 from flask import Flask
+from flask_cors import CORS
 from mirControl import mirControl
 from mirConnection import mirConnection
 import threading
-import sys
+import sys, os
+import subprocess
 import time
 
 class mirControlThread:
@@ -40,8 +42,7 @@ class mirControlThread:
             return self.errorJSON
         self.pauseE.set()
         self.curTime= time.time()#set time so script ignores old input
-        #self.mirCtrl.processCommand("dock")
-        return '{"res":"Running"}'
+        return "Parts delivering!"
 
     def pause(self):
         '''Asynchronic call to pause the control thread'''
@@ -49,7 +50,7 @@ class mirControlThread:
         if self.error:
             return self.errorJSON
         self.pauseE.clear()
-        return '{"res":"Paused"}'
+        return "Pausing program..."
 
     def handleError(self):
         '''Uses mir control class to communicate with mir to see if error exitst'''
@@ -57,14 +58,15 @@ class mirControlThread:
         req, status = self.mirCon.getStatusText()
         while req.status >299 or req.status < 200:
             #lost connection, nothing we can really do
-            self.errorJSON = '{"Res":"MiR Lost Connection"}'
+            self.errorJSON = '{"Res": "MiR Lost Connection"}'
             self.error = True
             print("Connection Lost!!!")
             time.sleep(self.tick*3)
             req, status = self.mirCon.getStatusText()
+        if self.moving:
+            pass
         if (len(status['errors']) != 0):
             print(status['errors'])
-        
 
     def run(self):
         '''Control thread that check error repeatly and calls mir control when we have new input'''
@@ -84,9 +86,9 @@ class mirControlThread:
                 self.mirCtrl.processCommand(self.inputCommand)
                 self.curTime = self.inputTime
 
-
 mct = mirControlThread()
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 #Flask API service calls
 #forwarded into mir control thread class
@@ -105,6 +107,10 @@ def flask_run():
 
 if __name__ == '__main__':
     '''Setup flask to run in a separate thread and calls mir control thread to run'''
+    newpid = os.fork()
+    if newpid == 0:
+        os.chdir("angularCode")
+        subprocess.call(["ng", "serve", "--port=80", "--host=0.0.0.0"])
     t = threading.Thread(target=flask_run)
     t.start()
     mct.run()

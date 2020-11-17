@@ -2,12 +2,19 @@
     <div class="pageHeader">
         <p>Mission Page</p>
     </div>
-    <img class = "image" src="assets/images/mirMap.jpg">
+    <div class = "msg">
+        <p>{{message}}</p>
+    </div>
     <div class = "deliver">
         <button (click)="deliver()">Deliver</button>
     </div>
     <div class = "pause">
         <button (click)="pauseProgram()">Pause</button>
     </div>
-    <p>{{message}}</p>
+    <div class = "rfs">
+        <button (click)="resumeSafety()">Resume from Safety</button>
+    </div>
+    <div class = "msg">
+        <p>{{status}}</p>
+    </div>
 </div>

@@ -4,17 +4,27 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { map } from "rxjs/operators";
+
 
 @Injectable()
 export class MissionService {
     constructor(private http: HttpClient) { }
+    ip = "127.0.0.1";
+    ip2 = "192.168.1.10";
     getStart() {
-        return this.http.get("http://192.168.1.10:1234/resume", {responseType: "text"});//,{
-        //    responseType:'text'});
-        
+        return this.http.get("http://"+this.ip+":1234/resume", {responseType: "text"});
     }
     getStop() {
-        return this.http.get("http://192.168.1.10:1234/pause", {responseType: "text"});//,{
-        //    responseType:'text'});
+        return this.http.get("http://"+this.ip+":1234/pause", {responseType: "text"});
+    }
+    getSafe() {
+        return this.http.get("http://"+this.ip+":1234/safe", {responseType: "text"});
+    }
+    getStatus() {
+        return this.http.get("http://"+this.ip+":1234/status", {responseType: "text"})
+        .pipe(
+            map(res => res)
+          );
     }
 }
