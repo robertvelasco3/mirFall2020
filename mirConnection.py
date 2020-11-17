@@ -52,7 +52,7 @@ class mirConnection:
             headers={'Content-Type': 'application/json', 'authorization': ' Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='}, 
             body=missionBody)
         missions = json.loads(req.data.decode('utf-8'))
-        print("Req: ", req)
+        #print("Req: ", req)
         print("Status: ", missions)
         if(req.status == 200):
             print("Mission Successfully Queued: ", missionID)
@@ -69,9 +69,11 @@ class mirConnection:
         req = http.request('GET', self.mirurl + '/v2.0.0/status', headers={'Content-Type': 'application/json',
                 'authorization': 'Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA=='})
         status = json.loads(req.data.decode('utf-8'))
-        print("Status:", status)
-        distance = status['distance_to_next_target']
+        #print("Status:", status)
         errors = status['errors']
+        if(errors):
+            return (0, errors)
+        distance = status['distance_to_next_target']
         print("Distance To Target: ", distance)
         print("Errors:", errors)
         return (distance, errors)
