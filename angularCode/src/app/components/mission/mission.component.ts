@@ -19,7 +19,7 @@ export class MissionComponent implements OnInit {
 
   ngOnInit() {
     this.message = "Welcome to mission control! Click Deliver to start.";
-    interval(5000)
+    interval(2000)
       .pipe(
         startWith(0),
         switchMap(() => this.ms.getStatus())
@@ -29,21 +29,19 @@ export class MissionComponent implements OnInit {
   }
 
   deliver() {
-    this.message = "Parts delivering!";
-    this.ms.getStart().subscribe(results => {this.message = results;}, null);
+    //this.message = "Parts delivering!";
+    this.ms.getStart().subscribe(results => {this.message = results;}, results => {this.message = "Server not responding";});
   }
 
   pauseProgram() {
-    this.message = "Pausing program..."
-    this.ms.getStop().subscribe(results => {this.message = results;}, null);
-    this.message
+    //this.message = "Pausing program..."
+    this.ms.getStop().subscribe(results => {this.message = results;}, results => {this.message = "Server not responding";});
   } 
 
   
   resumeSafety() {
-    this.message = "Resuming from safety..."
-    this.ms.getSafe().subscribe(results => {this.message = results;}, null);
-    this.message
+    //this.message = "Resuming from safety..."
+    this.ms.getSafe().subscribe(results => {this.message = results;}, results => {this.message = "Server not responding";});
   } 
 
 }

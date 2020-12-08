@@ -23,7 +23,9 @@ class mirControlThread:
         self.inputTime = self.curTime
         self.inputCommand = None
         self.error = False
-        self.errorJSON = None
+        self.errorMSG = " "
+        self.atStart = True
+        self.statusMSG = " "
 
     def inputProducer(self):
         '''Thread to accept input from standard input (QR scanner) with timestamp'''
@@ -39,31 +41,40 @@ class mirControlThread:
         '''Asynchronic call to resume the control thread'''
         #print("resume called")
         if self.error:
-            return self.errorJSON
-        if self.pauseE.is_set():
+            return self.errorMSG
+        if self.atStart:
+            self.inputCommand = "dock"
+            self.inputTime = time.time()#set time so script ignores old input
+            if not self.pauseE.is_set():
+                self.pauseE.set()
+            return "Parts delivering!"
+        elif self.pauseE.is_set():
             return "Already delivering!"
-        self.pauseE.set()
-        self.curTime= time.time()#set time so script ignores old input
-        return "Parts delivering!"
+        else:
+            self.pauseE.set()
+            self.curTime= time.time()#set time so script ignores old input
+        return "Resuming!"
 
     def pause(self):
         '''Asynchronic call to pause the control thread'''
         #print("pause called")
         if self.error:
-            return self.errorJSON
+            return self.errorMSG
         if not self.pauseE.is_set():
             return "Already Paused!"
         self.pauseE.clear()
         return "Pausing program..."
 
     def safe(self):
-        if mirCtrl.safe():
+        if self.mirCtrl.safe():
             return "Resuming from safety location"
         else:
             return "Not at safety location"
 
-    def status():
-        return " "
+    def status(self):
+        if self.error:
+            return self.errorMSG
+        return self.statusMSG + ", Location: " + self.mirCtrl.getLocation() + ", Action: " + self.mirCtrl.getAction()
 
     def handleError(self):
         '''Uses mir control class to communicate with mir to see if error exitst'''
@@ -71,15 +82,16 @@ class mirControlThread:
         req, status = self.mirCon.getStatusText()
         while req.status >299 or req.status < 200:
             #lost connection, nothing we can really do
-            self.errorJSON = '{"Res": "MiR Lost Connection"}'
+            self.errorMSG = "MiR Lost Connection: "
             self.error = True
             print("Connection Lost!!!")
             time.sleep(self.tick*3)
             req, status = self.mirCon.getStatusText()
-        if self.moving:
-            pass
-        if (len(status['errors']) != 0):
+        if ('error' in status and len(status['errors']) != 0):
             print(status['errors'])
+            self.errorMSG = self.errorMSG  + status['errors']
+        else:
+            self.statusMSG = "Battery: " + str(status["battery_percentage"])[:5]
 
     def run(self):
         '''Control thread that check error repeatly and calls mir control when we have new input'''
@@ -87,7 +99,7 @@ class mirControlThread:
         t.start()
         self.pauseE.clear()
         self.pauseE.wait()
-        self.mirCtrl.processCommand("dock")
+        #self.mirCtrl.processCommand("dock")
         while(True):
             time.sleep(self.tick)
             if not self.pauseE.isSet():
@@ -96,7 +108,7 @@ class mirControlThread:
             self.handleError()
             if self.inputTime > self.curTime:
                 print (self.inputCommand)
-                self.mirCtrl.processCommand(self.inputCommand)
+                self.atStart=self.mirCtrl.processCommand(self.inputCommand)
                 self.curTime = self.inputTime
 
 mct = mirControlThread()
@@ -128,10 +140,10 @@ def flask_run():
 
 if __name__ == '__main__':
     '''Setup flask to run in a separate thread and calls mir control thread to run'''
-    newpid = os.fork()
-    if newpid == 0:
-        os.chdir("angularCode")
-        subprocess.call(["ng", "serve", "--port=80", "--host=0.0.0.0"])
+    #newpid = os.fork()
+    #if newpid == 0:
+    #    os.chdir("angularCode")
+    #    os.execvp("ng", ["ng", "serve", "--port=80", "--host=0.0.0.0"])
     t = threading.Thread(target=flask_run)
     t.start()
     mct.run()

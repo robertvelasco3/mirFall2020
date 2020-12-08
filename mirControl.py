@@ -20,8 +20,12 @@ class mirControl:
         self.hasDocked = False
         self.safetyE = threading.Event()
         self.safetyE.set()
+        self.actionMSG = "idle"
+        self.locMSG = "start"
 
     def safe(self):
+        self.mir.clearError()
+        self.mir.makeReady()
         if self.safetyE.is_set():
             return False
         self.safetyE.set()
@@ -33,6 +37,7 @@ class mirControl:
 
     def Unload(self):
         print('Currently unloading the MiR100')
+        self.actionMSG = "unloading"
         self.motor.moveForward(5)
 
     def Stop(self):
@@ -41,15 +46,23 @@ class mirControl:
 
     def Load(self):
         print('Currently loading the MiR100')
+        self.actionMSG = "loading"
         self.motor.moveBackward(2)
 
     def Undock(self):
-        print('Currently undocking the MiR100')
+        print('Cu149/{rrently undocking the MiR100')
         self.mir.performMission(self.GoToStart)
     
     def Goto(self, loc):
         print('going to' + loc)
         self.mir.performMission(loc)
+        
+    def getLocation(self):
+        return self.locMSG
+        
+    def getAction(self):
+        return self.actionMSG
+        
 
 
 #Inputs: None
@@ -60,14 +73,15 @@ class mirControl:
 #.            to 4 (we assume path is unreachable) missions are deleted from the queue and the error handler is called.
     def Docking(self, target):
         pathCount = 0
-        self.Dock()
+        self.Goto(target)
         sleep(0.5)
         stopped = False
         oldDist = 10000
         while(True):
-            sleep(0.2)
+            sleep(0.5)
             dist, error = self.mir.getDistFromTarget()
             if error:
+                print("Error: ", error)
                 self.handleError()
                 self.Docking(target)
                 break
@@ -78,13 +92,13 @@ class mirControl:
                 self.mir.deleteMissions()
                 self.Goto(target)
                 stopped = True
-                break
-            elif dist == 0:
+            elif dist < 0.2 and dist != -1:
+                sleep(5)
                 break
             else:
                 print('not there')
             oldDist = dist
-            if(pathCount == 4):
+            if(pathCount == 3):
                 print("Error: Path changed ", pathCount, " times. Stopping program to avoid endless loop.")
                 self.mir.deleteMissions()
                 self.handleError()
@@ -92,11 +106,18 @@ class mirControl:
                 break
 
     def handleError(self):
+        sleep(0.5)
         self.mir.clearError()
+        sleep(0.5)
         self.mir.makeReady()
+        self.locMSG ="moving or at safety"
+        self.actionMSG = "waiting for resuming safety"
+        sleep(0.5)
         self.mir.performMission(self.GoToSafe)
         self.safetyE.clear()
         self.safetyE.wait()
+        self.locMSG ="moving"
+        self.actionMSG = "resuming from safety"
 
     def processCommand(self, command):
         '''Process incomming command string and run once accordingly'''
@@ -104,24 +125,40 @@ class mirControl:
             #mir.endMission(GoToA)
             #Dock()
             #print("Im here")
-        if command == 'unload':
+
+        if command == self.previous:
+            pass
+        elif command == 'unload':
             self.Unload()
         elif command == 'stop':
             self.Stop()
         elif command == 'load':
             self.Load()
-        elif command == 'undock' and command != self.previous:
+        elif command == 'undock':
+            self.locMSG ="moving"
+            self.actionMSG = "moving to start"
             self.Docking(self.GoToStart)
+            self.previous = command
+            print("hasDocked:", self.hasDocked)
+            self.locMSG = "start"
+            self.actionMSG = "idle"
+            self.previous=command
+            return True
         elif command == 'dock':
+            self.locMSG = "moving"
+            self.actionMSG = "moving to dock"
             self.Docking(self.GoToA)
+            self.locMSG = "dock"
+            self.actionMSG = "idle"
         elif self.end:
             print('Ending Code')
-            return False
+            #return False
         else:
             print('Error: command not valid')
+            return False
         self.previous = command
         print("hasDocked:", self.hasDocked)
-        return True
+        return False
 
 if __name__ == '__main__':
     mirCtrl = mirControl()

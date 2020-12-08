@@ -13,16 +13,16 @@ export class MissionService {
     ip = "127.0.0.1";
     ip2 = "192.168.1.10";
     getStart() {
-        return this.http.get("http://"+this.ip+":1234/resume", {responseType: "text"});
+        return this.http.get("http://"+this.ip2+":1234/resume", {responseType: "text"});
     }
     getStop() {
-        return this.http.get("http://"+this.ip+":1234/pause", {responseType: "text"});
+        return this.http.get("http://"+this.ip2+":1234/pause", {responseType: "text"});
     }
     getSafe() {
-        return this.http.get("http://"+this.ip+":1234/safe", {responseType: "text"});
+        return this.http.get("http://"+this.ip2+":1234/safe", {responseType: "text"});
     }
     getStatus() {
-        return this.http.get("http://"+this.ip+":1234/status", {responseType: "text"})
+        return this.http.get("http://"+this.ip2+":1234/status", {responseType: "text"})
         .pipe(
             map(res => res)
           );
